@@ -294,7 +294,7 @@ namespace pl {
         for (const auto &[section, patterns] : this->m_patterns) {
             auto &sectionTree = this->m_flattenedPatterns[section];
             for (const auto &pattern : patterns) {
-                auto children = pattern->getChildren();
+                auto children = pattern->getAllChildren();
 
                 for (const auto &[address, child]: children) {
                     if (this->m_aborted)
@@ -316,6 +316,7 @@ namespace pl {
         auto intervals = this->m_flattenedPatterns.at(section).overlapping({ address, address });
 
         std::vector<ptrn::Pattern*> results;
+        /*
         std::transform(intervals.begin(), intervals.end(), std::back_inserter(results), [](const auto &interval) {
             ptrn::Pattern* value = interval.value;
 
@@ -324,6 +325,13 @@ namespace pl {
 
             return value;
         });
+        */
+
+        if (this->m_patterns.contains(section))
+            for (const auto &pattern : this->m_patterns.at(section))
+                for (const auto &[child_address, child]: pattern->getAllChildren())
+                    if (child->getSize() != 0 && address >= child_address && address < child_address + child->getSize())
+                        results.emplace_back(child);
 
         return results;
     }

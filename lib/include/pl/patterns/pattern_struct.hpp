@@ -92,6 +92,22 @@ namespace pl::ptrn {
             }
         }
 
+        [[nodiscard]] std::vector<std::pair<u64, Pattern*>> getAllChildren() override {
+            if (this->getVisibility() == Visibility::HighlightHidden)
+                return { };
+
+            std::vector<std::pair<u64, Pattern*>> result = { { this->getOffset(), this } };
+
+            if (!this->isSealed()) {
+                for (const auto &member : this->m_members) {
+                    auto children = member->getAllChildren();
+                    std::move(children.begin(), children.end(), std::back_inserter(result));
+                }
+
+            }
+            return result;
+        }
+
         void setLocal(bool local) override {
             for (auto &pattern : this->m_members)
                 pattern->setLocal(local);

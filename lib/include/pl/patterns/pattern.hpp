@@ -255,6 +255,13 @@ namespace pl::ptrn {
                 return { { this->getOffset(), this } };
         }
 
+        [[nodiscard]] virtual std::vector<std::pair<u64, Pattern*>> getAllChildren() {
+            if (this->isPatternLocal())
+                return { };
+            else
+                return { { this->getOffset(), this } };
+        }
+
         void setVisibility(Visibility visibility) {
             switch (visibility) {
                 case Visibility::Visible:
